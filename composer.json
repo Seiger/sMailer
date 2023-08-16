@@ -1,0 +1,36 @@
+{
+    "name": "seiger/smailer",
+    "license": "GPL-3.0",
+    "type": "EvolutionCMS-Module",
+    "description": "Mailing lists Management Module for Evolution CMS admin panel.",
+    "keywords": ["evocms", "evolution-cms"],
+    "authors": [
+        {
+            "name": "Serhii Korneliuk",
+            "email": "info@seigerit.com"
+        }
+    ],
+    "require": {
+        "php": "^8"
+    },
+    "autoload": {
+        "psr-4": {
+            "Seiger\\sMailer\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Seiger\\sMailer\\sMailerServiceProvider"
+            ],
+            "aliases": {
+                "sMailer": "Seiger\\sMailer\\Facades\\sMailer"
+            }
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "php artisan migrate"
+        ]
+    }
+}
