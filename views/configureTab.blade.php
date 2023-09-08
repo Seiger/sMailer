@@ -1,14 +1,9 @@
-<style>
-    .input-group .tox-tinymce {
-        width: 100%;
-    }
-</style>
+<style>.input-group .tox-tinymce{width:100%;}</style>
 <form id="form" name="form" method="post" enctype="multipart/form-data" action="{!!$url!!}&get=configure" onsubmit="documentDirty=false;">
     <div class="row form-row">
         <div class="col mb-4">
             <div class="col-12 col-title-7 mb-3">
                 <label for="alias" class="warning mb-0 seiger-input-title">Текст у підвалі</label>
-                <!-- <i class="fa fa-question-circle" data-tooltip=""></i> -->
             </div>
             <div class="input-group">
                 <textarea id="footer_text" name="config[footer_text]" class="form-control col-12" onchange="documentDirty=true;">{!!config('seiger.settings.sMailer.config.footer_text', '')!!}</textarea>
