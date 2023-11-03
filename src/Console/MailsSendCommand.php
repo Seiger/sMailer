@@ -95,6 +95,10 @@ class MailsSendCommand extends Command
             $logText .= 'Periodic mailing is off. ';
         }
 
+        if (!trim($logText)) {
+            $logText = 'Check Send email mesage for website subscribers.';
+        }
+
         Log::info($logText);
         return $this->info($logText);
     }
