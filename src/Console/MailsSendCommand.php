@@ -65,9 +65,9 @@ class MailsSendCommand extends Command
                             $param['to'] = $subscriber->email;
                             $param['type'] = 'html';
                             if (evo()->sendmail($param)) {
-                                $logText .= 'Periodic mail succes send to ' . $subscriber->email . '. ';
+                                $logText .= 'Periodic mail succes send to ' . $subscriber->email . ".\n";
                             } else {
-                                $logText .= 'Somsing went wrong with ' . $subscriber->email . ' periodic mail. ';
+                                $logText .= 'Somsing went wrong with ' . $subscriber->email . ' periodic mail.' . "\n";
                             }
                         }
                         /*$testes = ['seigerkornelyuk@gmail.com', 'vitaliy.voytul@gmail.com'];
