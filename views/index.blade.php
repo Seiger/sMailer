@@ -34,5 +34,5 @@
         function saveForm(selector){$(selector).submit()}
         function changestate(el){if(parseInt(el.value)===1){el.value=0}else{el.value=1;}documentDirty=true;}
     </script>
-    <div id="copyright"><a href="https://seigerit.com/" target="_blank"><img src="{{evo()->getConfig('site_url', '/')}}assets/site/seigerit-yellow.svg"/></a></div>
+    <div id="copyright"><a href="https://seigerit.com/" target="_blank"><img src="{{evo()->getConfig('site_url', '/')}}assets/site/seirgerit-white.svg"/></a></div>
 @endpush

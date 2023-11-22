@@ -1,7 +1,7 @@
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-    #copyright{position:fixed;bottom:0;right:0;background-color:#0057b8;padding:3px 7px;border-radius:5px;}
-    #copyright img{width:9em;}
+    #copyright{position:fixed;bottom:0;right:0;background-color:#0057b8;padding:5px;border-radius:10px;}
+    #copyright img{width:25px;}
     /* configTab */
     .seiger__module-title {
         font-family: 'Roboto', serif;
@@ -195,7 +195,7 @@
         justify-content: space-between;
     }
     .seiger__bottom > * {
-        flex: 1 100%; 
+        flex: 1 100%;
     }
     .seiger__bottom > *:first-of-type,
     .seiger__bottom > *:last-of-type {
@@ -298,7 +298,7 @@
     input[type="search"]::-webkit-search-results-decoration {
         -webkit-appearance:none;
     }
-        /* Hide the AM and PM labels (Chrome) */
+    /* Hide the AM and PM labels (Chrome) */
     input[type=time]::-webkit-datetime-edit-ampm-field {
         display: none;
     }
@@ -312,17 +312,17 @@
         -o-appearance: none;
         -ms-appearance:none;
         appearance: none;
-        margin: -10px; 
+        margin: -10px;
     }
 
     /* Hide the AM and PM labels (Firefox) */
     input[type="time"]::-moz-datetime-increment {
-    display: none;
+        display: none;
     }
 
     /* Hide the AM and PM labels (Edge) */
     input[type="time"]::-ms-clear {
-    display: none;
+        display: none;
     }
 
     .bootstrap-datetimepicker-widget.dropdown-menu {
