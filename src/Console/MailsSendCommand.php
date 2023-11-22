@@ -32,15 +32,15 @@ class MailsSendCommand extends Command
         \View::getFinder()->setPaths([evo()->resourcePath('modules/smailer')]);
 
         if (config('seiger.settings.sMailer.periodic.published', 0) == 1) {
+            $param = [];
+            $param['type'] = 'html';
+            $param['from'] = evo()->getConfig('site_name') . '<' . evo()->getConfig('emailsender') . '>';
+            $param['subject'] = config('seiger.settings.sMailer.periodic.subject', '');
             $message = \View::make('periodicTemplate')->render();
 
             if ($email = $this->argument('email')) {
-                $param = [];
-                $param['from'] = evo()->getConfig('site_name') . '<' . evo()->getConfig('emailsender') . '>';
-                $param['subject'] = config('seiger.settings.sMailer.periodic.subject', '');
                 $param['body'] = $message;
                 $param['to'] = $email;
-                $param['type'] = 'html';
                 if (evo()->sendmail($param)) {
                     $logText .= 'Periodic mail succes send to ' . $email . '. ';
                 } else {
@@ -56,38 +56,31 @@ class MailsSendCommand extends Command
                     $subscribers = DB::table('s_mailer_users')->whereBlocked(0)->whereSubscribe(1)->get();
                     if ($subscribers) {
                         foreach ($subscribers as $subscriber) {
-                            $unsubscribe_link = config('seiger.settings.sMailer.config.site_url', '/') . 'unsubscribe/' . $subscriber->id . '-' . $subscriber->email;
-                            $message = str_replace('[+unsubscribe_link+]', $unsubscribe_link, $message);
-                            $param = [];
-                            $param['from'] = evo()->getConfig('site_name') . '<' . evo()->getConfig('emailsender') . '>';
-                            $param['subject'] = config('seiger.settings.sMailer.periodic.subject', '');
-                            $param['body'] = $message;
-                            $param['to'] = $subscriber->email;
-                            $param['type'] = 'html';
-                            if (evo()->sendmail($param)) {
-                                $logText .= 'Periodic mail succes send to ' . $subscriber->email . ".\n";
-                            } else {
-                                $logText .= 'Somsing went wrong with ' . $subscriber->email . ' periodic mail.' . "\n";
-                            }
+                            DB::table('s_mailer_queue')->insert(                                [
+                                'id' => $subscriber->id,
+                                'email' => $subscriber->email,
+                                'type' => 'periodic'
+                            ]                            );
                         }
-                        /*$testes = ['seigerkornelyuk@gmail.com', 'vitaliy.voytul@gmail.com'];
-                        foreach ($testes as $tester) {
-                            $unsubscribe_link = config('seiger.settings.sMailer.config.site_url', '/') . 'unsubscribe/' . $tester;
-                            $message = str_replace('[+unsubscribe_link+]', $unsubscribe_link, $message);
-                            $param = [];
-                            $param['from'] = evo()->getConfig('site_name') . '<' . evo()->getConfig('emailsender') . '>';
-                            $param['subject'] = config('seiger.settings.sMailer.periodic.subject', '');
-                            $param['body'] = $message;
-                            $param['to'] = $tester;
-                            $param['type'] = 'html';
-                            if (evo()->sendmail($param)) {
-                                $logText .= 'Periodic mail succes send to ' . $tester . '. ';
-                            } else {
-                                $logText .= 'Somsing went wrong with ' . $tester . ' periodic mail. ';
-                            }
-                        }*/
+                        $logText .= 'Periodic mailing subscribers queue is ready.'."\n";
                     } else {
-                        $logText .= 'Periodic mailing subscribers list is empty. ';
+                        $logText .= 'Periodic mailing subscribers list is empty.'."\n";
+                    }
+                }
+
+                $queues = DB::table('s_mailer_queue')->limit(config('seiger.settings.sMailer.config.take_of_each', 10))->get();
+                if ($queues) {
+                    foreach ($queues as $queue) {
+                        $unsubscribe_link = config('seiger.settings.sMailer.config.site_url', '/') . 'unsubscribe/' . $queue->id . '-' . $queue->email;
+                        $message = str_replace('[+unsubscribe_link+]', $unsubscribe_link, $message);
+                        $param['body'] = $message;
+                        $param['to'] = $queue->email;
+                        DB::table('s_mailer_queue')->whereId($queue->id)->whereType($queue->type)->delete();
+                        if (evo()->sendmail($param)) {
+                            $logText .= 'Periodic mail succes send to ' . $queue->email . ".\n";
+                        } else {
+                            $logText .= 'Somsing went wrong with ' . $queue->email . ' periodic mail.'."\n";
+                        }
                     }
                 }
             }
@@ -95,11 +88,10 @@ class MailsSendCommand extends Command
             $logText .= 'Periodic mailing is off. ';
         }
 
-        if (!trim($logText)) {
-            $logText = 'Check Send email mesage for website subscribers.';
+        if (trim($logText)) {
+            Log::info($logText);
         }
 
-        Log::info($logText);
         return $this->info($logText);
     }
 
