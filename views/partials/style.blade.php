@@ -1,7 +1,7 @@
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-    #copyright{position:fixed;bottom:0;right:0;background-color:#0057b8;padding:5px;border-radius:10px;}
-    #copyright img{width:25px;}
+    #copyright{position:fixed;bottom:0;right:0;}
+    #copyright img{width:35px;}
     /* configTab */
     .seiger__module-title {
         font-family: 'Roboto', serif;

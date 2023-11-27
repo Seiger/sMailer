@@ -32,7 +32,7 @@ class sMailerServiceProvider extends ServiceProvider
                 dirname(__DIR__) . '/config/sMailerAlias.php' => config_path('app/aliases/sMailer.php', true),
                 dirname(__DIR__) . '/config/sMailerSettings.php' => config_path('seiger/settings/sMailer.php', true),
                 dirname(__DIR__) . '/images/noimage.png' => public_path('assets/images/noimage.png'),
-                dirname(__DIR__) . '/images/seirgerit-white.svg' => public_path('assets/site/seirgerit-white.svg'),
+                dirname(__DIR__) . '/images/seigerit-blue.svg' => public_path('assets/site/seigerit-blue.svg'),
             ]);
         }
 
