@@ -69,7 +69,7 @@ class MailsSendCommand extends Command
                 }
 
                 $queues = DB::table('s_mailer_queue')->limit(config('seiger.settings.sMailer.config.take_of_each', 10))->get();
-                if ($queues) {
+                if ($queues && trim($message)) {
                     foreach ($queues as $queue) {
                         $unsubscribe_link = config('seiger.settings.sMailer.config.site_url', '/') . 'unsubscribe/' . $queue->id . '-' . $queue->email;
                         $message = str_replace('[+unsubscribe_link+]', $unsubscribe_link, $message);
