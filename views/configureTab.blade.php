@@ -65,7 +65,7 @@
         </div>
     </div>
     <input name="config[site_url]" value="{{evo()->getConfig('site_url', '/')}}" type="hidden"/>
-    <input name="config[take_of_each]" value="4" type="hidden"/>
+    <input name="config[take_of_each]" value="5" type="hidden"/>
 </form>
 @push('scripts.bot')
     <div id="actions">

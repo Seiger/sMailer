@@ -1,25 +1,29 @@
 <?php namespace Seiger\sMailer\Console;
 
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Seiger\sMailer\Controllers\sMailerController;
+use Seiger\sMailer\Models\sMailerQueue;
+use Seiger\sMailer\Models\sMailerUser;
 
-class MailsSendCommand extends Command
+class MailsOnceSendCommand extends Command
 {
     /**
      * The signature of the command.
      *
      * @var string
      */
-    protected $signature = 'smailer:mails-send {email? : Use Email if need send it anybody}';
+    protected $signature = 'smailer:once-send {email? : Use Email if need send it anybody}';
 
     /**
      * The description of the command.
      *
      * @var string
      */
-    protected $description = 'Send periodic email mesage for website subscribers.';
+    protected $description = 'Send none periodic email mesage for website subscribers.';
 
     /**
      * Execute the console command.
@@ -31,65 +35,68 @@ class MailsSendCommand extends Command
         $logText = '';
         \View::getFinder()->setPaths([evo()->resourcePath('modules/smailer')]);
 
-        if (config('seiger.settings.sMailer.periodic.published', 0) == 1) {
+        if (config('seiger.settings.sMailer.once.published', 0) == 1) {
             $param = [];
             $param['type'] = 'html';
             $param['from'] = evo()->getConfig('site_name') . '<' . evo()->getConfig('emailsender') . '>';
-            $param['subject'] = config('seiger.settings.sMailer.periodic.subject', '');
-            $message = \View::make('periodicTemplate')->render();
+            $param['subject'] = config('seiger.settings.sMailer.once.subject', '');
+            $message = \View::make('onceTemplate')->render();
 
             if ($email = $this->argument('email')) {
                 $param['body'] = $message;
                 $param['to'] = $email;
                 if (evo()->sendmail($param)) {
-                    $logText .= 'Periodic mail succes send to ' . $email . '. ';
+                    $logText .= 'Once mail succes send to ' . $email . '. ';
                 } else {
-                    $logText .= 'Somsing went wrong with ' . $email . ' periodic mail. ';
+                    $logText .= 'Somsing went wrong with ' . $email . ' once mail. ';
                 }
             } else {
                 $start = evo()->now()->subMinute();
                 $end = evo()->now()->addMinutes(5);
-                $day = config('seiger.settings.sMailer.periodic.day', 'Monday');
-                $time = str_replace(':', '', config('seiger.settings.sMailer.periodic.time', '09:00'));
+                $at = \Carbon\Carbon::parse(config('seiger.settings.sMailer.once.datetime', 'yesterday'));
 
-                if ($day == $start->dayName && $start->format('Hi') < $time && $end->format('Hi') > $time) {
-                    $subscribers = DB::table('s_mailer_users')->whereBlocked(0)->whereSubscribe(1)->get();
+                if ($start <= $at && $at < $end) {
+                    $subscribers = sMailerUser::whereBlocked(0)->whereSubscribe(1)->get();
                     if ($subscribers) {
                         foreach ($subscribers as $subscriber) {
-                            DB::table('s_mailer_queue')->insert([
+                            sMailerQueue::insert([
                                 'id' => $subscriber->id,
                                 'email' => $subscriber->email,
-                                'type' => 'periodic'
+                                'type' => 'once'
                             ]);
                         }
-                        $logText .= 'Periodic mailing subscribers queue is ready.'."\n";
+                        $logText .= 'Once mailing subscribers queue is ready.'."\n";
                     } else {
-                        $logText .= 'Periodic mailing subscribers list is empty.'."\n";
+                        $logText .= 'Once mailing subscribers list is empty.'."\n";
                     }
                 }
 
-                $queues = DB::table('s_mailer_queue')->limit(config('seiger.settings.sMailer.config.take_of_each', 10))->get();
+                $queues = sMailerQueue::whereType('once')->limit(config('seiger.settings.sMailer.config.take_of_each', 10))->get();
                 if ($queues && trim($message)) {
                     foreach ($queues as $queue) {
                         $unsubscribe_link = config('seiger.settings.sMailer.config.site_url', '/') . 'unsubscribe/' . $queue->id . '-' . $queue->email;
                         $message = str_replace('[+unsubscribe_link+]', $unsubscribe_link, $message);
                         $param['body'] = $message;
                         $param['to'] = $queue->email;
-                        DB::table('s_mailer_queue')->whereId($queue->id)->whereType($queue->type)->delete();
-                        if (evo()->sendmail($param)) {
-                            $logText .= 'Periodic mail succes send to ' . $queue->email . ".\n";
-                        } else {
-                            $logText .= 'Somsing went wrong with ' . $queue->email . ' periodic mail.'."\n";
-                        }
+                        sMailerQueue::whereId($queue->id)->whereType($queue->type)->delete();
+                        //if (evo()->sendmail($param)) {
+                            $logText .= 'Once mail succes send to ' . $queue->email . ".\n";
+                        //} else {
+                        //    $logText .= 'Somsing went wrong with ' . $queue->email . ' once mail.'."\n";
+                        //}
+                    }
+
+                    if ($queues->count() < 1 && $at < $start && config('seiger.settings.sMailer.once.published', 0) == 1) {
+                        $once = config('seiger.settings.sMailer.once', []);
+                        $once['published'] = 0;
+                        (new sMailerController())->updateConfigure(['once' => $once]);
                     }
                 }
             }
-        } else {
-            $logText .= 'Periodic mailing is off. ';
-        }
 
-        if (trim($logText)) {
-            Log::info($logText);
+            if (trim($logText)) {
+                Log::info($logText);
+            }
         }
 
         return $this->info($logText);

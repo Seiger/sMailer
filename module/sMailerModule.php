@@ -35,6 +35,18 @@ switch ($data['get']) {
         \View::getFinder()->setPaths([evo()->resourcePath('modules/smailer')]);
         return \View::make('periodicTemplate');
         break;
+    case "once":
+        $data['tabs'] = ['configure', 'periodic', 'once', 'subscribers'];
+        $data['editor'] = $сontroller->textEditor('content');
+        if (request()->isMethod('POST')) {
+            $сontroller->updateConfigure();
+            return header('Location: ' . $сontroller->url . '&get=once');
+        }
+        break;
+    case "once-preview":
+        \View::getFinder()->setPaths([evo()->resourcePath('modules/smailer')]);
+        return \View::make('onceTemplate');
+        break;
     case "subscribers":
         Paginator::defaultView('sMailer::partials.pagination');
         $perpage = Cookie::get('s_mailer_page_items', 50);

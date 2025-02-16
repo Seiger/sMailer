@@ -29,10 +29,10 @@ class sMailerController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function updateConfigure()
+    public function updateConfigure($data = null)
     {
         $configs = config('seiger.settings.sMailer', []);
-        $updateRequest = request()->only(['config', 'periodic']);
+        $updateRequest = $data ?: request()->only(['config', 'periodic', 'once']);
 
         // Merge config
         if (is_array($updateRequest) && count($updateRequest)) {
@@ -45,6 +45,13 @@ class sMailerController
                         $configs[$tab][$key] = [];
                         foreach ($item as $v) {
                             $configs[$tab][$key][] = ['file' => $item['file'][$i], 'link' => $item['link'][$i]];
+                            $i++;
+                        }
+                    } elseif ($key !== 'icons' && is_array($item)) {
+                        $i = 0;
+                        $configs[$tab][$key] = [];
+                        foreach ($item as $v) {
+                            $configs[$tab][$key][] = $v;
                             $i++;
                         }
                     }

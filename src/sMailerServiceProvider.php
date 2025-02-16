@@ -1,6 +1,7 @@
 <?php namespace Seiger\sMailer;
 
 use EvolutionCMS\ServiceProvider;
+use Seiger\sMailer\Console\MailsOnceSendCommand;
 use Seiger\sMailer\Console\MailsSendCommand;
 use Illuminate\Console\Scheduling\Schedule;
 
@@ -12,6 +13,7 @@ class sMailerServiceProvider extends ServiceProvider
      * @var array
      */
     protected $commands = [
+        'MailsOnceSendCommand' => MailsOnceSendCommand::class,
         'MailsSendCommand' => MailsSendCommand::class,
     ];
 
