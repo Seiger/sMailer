@@ -47,8 +47,8 @@ class MailsSendCommand extends Command
                     $logText .= 'Somsing went wrong with ' . $email . ' periodic mail. ';
                 }
             } else {
-                $start = evo()->now()->subMinute();
-                $end = evo()->now()->addMinutes(5);
+                $start = evo()->now()->setSeconds(0)->setMilliseconds(0);
+                $end = $start->copy()->addMinutes(5)->subMillisecond();
                 $day = config('seiger.settings.sMailer.periodic.day', 'Monday');
                 $time = str_replace(':', '', config('seiger.settings.sMailer.periodic.time', '09:00'));
 

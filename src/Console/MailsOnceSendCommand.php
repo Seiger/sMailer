@@ -51,8 +51,8 @@ class MailsOnceSendCommand extends Command
                     $logText .= 'Somsing went wrong with ' . $email . ' once mail. ';
                 }
             } else {
-                $start = evo()->now()->subMinute();
-                $end = evo()->now()->addMinutes(5);
+                $start = evo()->now()->setSeconds(0)->setMilliseconds(0);
+                $end = $start->copy()->addMinutes(5)->subMillisecond();
                 $at = \Carbon\Carbon::parse(config('seiger.settings.sMailer.once.datetime', 'yesterday'));
 
                 if ($start <= $at && $at < $end) {
