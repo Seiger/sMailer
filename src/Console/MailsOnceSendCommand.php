@@ -79,11 +79,11 @@ class MailsOnceSendCommand extends Command
                         $param['body'] = $message;
                         $param['to'] = $queue->email;
                         sMailerQueue::whereId($queue->id)->whereType($queue->type)->delete();
-                        //if (evo()->sendmail($param)) {
+                        if (evo()->sendmail($param)) {
                             $logText .= 'Once mail succes send to ' . $queue->email . ".\n";
-                        //} else {
-                        //    $logText .= 'Somsing went wrong with ' . $queue->email . ' once mail.'."\n";
-                        //}
+                        } else {
+                            $logText .= 'Somsing went wrong with ' . $queue->email . ' once mail.'."\n";
+                        }
                     }
 
                     if ($queues->count() < 1 && $at < $start && config('seiger.settings.sMailer.once.published', 0) == 1) {
