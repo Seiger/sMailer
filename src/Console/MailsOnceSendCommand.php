@@ -23,7 +23,7 @@ class MailsOnceSendCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Send none periodic email mesage for website subscribers.';
+    protected $description = 'Send none periodic email message for website subscribers.';
 
     /**
      * Execute the console command.
@@ -32,17 +32,18 @@ class MailsOnceSendCommand extends Command
      */
     public function handle()
     {
+        $email = $this->argument('email');
         $logText = '';
         \View::getFinder()->setPaths([evo()->resourcePath('modules/smailer')]);
 
-        if (config('seiger.settings.sMailer.once.published', 0) == 1) {
+        if (config('seiger.settings.sMailer.once.published', 0) == 1 || $email) {
             $param = [];
             $param['type'] = 'html';
             $param['from'] = evo()->getConfig('site_name') . '<' . evo()->getConfig('emailsender') . '>';
             $param['subject'] = config('seiger.settings.sMailer.once.subject', '');
             $message = \View::make('onceTemplate')->render();
 
-            if ($email = $this->argument('email')) {
+            if ($email) {
                 $param['body'] = $message;
                 $param['to'] = $email;
                 if (evo()->sendmail($param)) {
