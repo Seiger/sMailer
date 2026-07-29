@@ -7,26 +7,25 @@
 [![Stars](https://img.shields.io/packagist/stars/Seiger/smailer)](https://packagist.org/packages/seiger/smailer)
 [![Total Downloads](https://img.shields.io/packagist/dt/seiger/smailer)](https://packagist.org/packages/seiger/smailer)
 
-**sMailer** Mailing lists Management Module for Evolution CMS admin panel.
+**sMailer** provides mailing-list and newsletter management for Evolution CMS.
+
+The `2.x` branch currently contains the installable EvoUI manager foundation.
+Subscriber, campaign, delivery queue, and sTask worker capabilities will be
+introduced as separate verified increments.
 
 ## Install by artisan package installer
 
-Run in you /core/ folder:
+Run in your `/core/` folder:
 
 ```console
-php artisan package:installrequire seiger/smailer "*"
+php artisan package:installrequire seiger/smailer "2.x-dev"
 ```
 
-Generate the config file in **core/custom/config/cms/settings** with
-name **smailer.php** the file should return a
-comma-separated list of templates.
+The foundation requires PHP 8.4 or newer, Evolution CMS 3.5.7 or newer, EvoUI,
+and sTask. It registers the manager shell without publishing package-owned
+copies of EvoUI assets and without enabling delivery workers or the historical
+cron-based delivery commands.
 
 ```console
-php artisan vendor:publish --provider="Seiger\sMailer\sMailerServiceProvider"
-```
-
-Run make DB structure with command:
-
-```console
-php artisan migrate
+composer test
 ```

@@ -1,9 +1,9 @@
 {
     "name": "seiger/smailer",
     "license": "GPL-3.0",
-    "type": "EvolutionCMS-Module",
-    "description": "Mailing lists Management Module for Evolution CMS admin panel.",
-    "keywords": ["evocms", "evolution-cms"],
+    "type": "evolutioncms-module",
+    "description": "Modern EvoUI mail and newsletter package for Evolution CMS.",
+    "keywords": ["evocms", "evolution-cms", "newsletter", "mailing-list"],
     "authors": [
         {
             "name": "Serhii Korneliuk",
@@ -11,7 +11,10 @@
         }
     ],
     "require": {
-        "php": "^8"
+        "php": ">=8.4",
+        "evolution-cms/evolution": "^3.5.7",
+        "evolution-cms/evo-ui": "*",
+        "seiger/stask": "*"
     },
     "autoload": {
         "psr-4": {
@@ -29,8 +32,6 @@
         }
     },
     "scripts": {
-        "post-autoload-dump": [
-            "php artisan migrate"
-        ]
+        "test": "php tests/run.php"
     }
 }

@@ -1,4 +1,9 @@
 <?php return [
+    'module_title' => 'Розсилки',
+    'module_icon' => 'tabler-mail-fast',
+    'overview' => 'Огляд',
+    'foundation_title' => 'Основа sMailer 2.x',
+    'foundation_description' => 'Каркас менеджера EvoUI встановлено. Роботу з підписниками, кампаніями й доставкою буде додано окремими інкрементами.',
     'configure' => 'Налаштування',
     'configure_help' => 'Налаштування основних параметрів листа.',
     'configure_icon' => 'fa fa-cog',
