@@ -1,9 +1,18 @@
 {
     "name": "seiger/smailer",
     "license": "GPL-3.0",
-    "type": "evolutioncms-module",
-    "description": "Modern EvoUI mail and newsletter package for Evolution CMS.",
-    "keywords": ["evocms", "evolution-cms", "newsletter", "mailing-list"],
+    "type": "evolution-cms-module",
+    "description": "Visual email campaign builder, subscriber management, and scheduled delivery for Evolution CMS.",
+    "keywords": [
+        "evocms",
+        "evolution-cms",
+        "email",
+        "email-marketing",
+        "newsletter",
+        "mailing-list",
+        "campaign-builder",
+        "subscriber-management"
+    ],
     "authors": [
         {
             "name": "Serhii Korneliuk",

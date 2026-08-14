@@ -6,9 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Illuminate\View\View;
+use Illuminate\Contracts\View\View;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Seiger\sMailer\Models\Mailing;
 
 class sMailerController
 {
@@ -20,6 +21,47 @@ class sMailerController
     public function __construct()
     {
         $this->url = $this->moduleUrl();
+    }
+
+    /** Render the sMailer manager module shell. */
+    public function index(): View
+    {
+        $requestedScreen = request()->string('smailer_screen')->value();
+        $screen = $requestedScreen === 'editor' ? $requestedScreen : 'collection';
+        $activeTab = request()->string('smailer_tab')->value();
+        $activeTab = in_array($activeTab, ['overview', 'mailings', 'subscribers', 'settings'], true)
+            ? $activeTab
+            : 'overview';
+        $query = request()->query();
+        unset($query['smailer_screen'], $query['smailer_mailing'], $query['smailer_tab']);
+        $query['smailer_tab'] = 'mailings';
+        $collectionUrl = request()->url() . ($query === [] ? '' : '?' . http_build_query($query));
+        $mailingId = request()->integer('smailer_mailing');
+        $mailing = $screen === 'editor' && $mailingId > 0
+            ? Mailing::query()->find($mailingId)
+            : null;
+
+        return view('sMailer::module.shell', [
+            'moduleTitle' => __('sMailer::global.module_title'),
+            'tabs' => [
+                ['key' => 'overview', 'label' => __('sMailer::global.overview'), 'icon' => 'layout-dashboard'],
+                ['key' => 'mailings', 'label' => __('sMailer::global.mailings'), 'icon' => 'mail'],
+                ['key' => 'subscribers', 'label' => __('sMailer::global.subscribers'), 'icon' => 'users'],
+                ['key' => 'settings', 'label' => __('sMailer::global.settings'), 'icon' => 'settings'],
+            ],
+            'activeTab' => $activeTab,
+            'context' => [
+                'screen' => $screen,
+                'collectionUrl' => $collectionUrl,
+                'mailing' => $mailing ? [
+                    'id' => $mailing->id,
+                    'name' => $mailing->name,
+                    'status' => $mailing->status,
+                    'delivery_mode' => $mailing->delivery_mode,
+                    'document' => $mailing->document,
+                ] : null,
+            ],
+        ]);
     }
 
     /**

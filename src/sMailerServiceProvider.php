@@ -2,14 +2,15 @@
 
 use EvolutionCMS\ServiceProvider;
 use EvoUI\EvoUI;
+use Illuminate\Support\Facades\File;
 use Seiger\sMailer\Components\ModulePanel;
 
 /**
  * Register the sMailer 2.x package foundation with Evolution CMS.
  *
  * The provider owns only package discovery and the EvoUI manager boundary.
- * Campaign delivery, persistence, and sTask orchestration are intentionally
- * deferred to later 2.x increments.
+ * Campaign persistence lives in the package. One-time delivery is delegated
+ * to sTask; this provider does not register a competing scheduler or queue.
  *
  * @since 2.0.0
  */
@@ -30,6 +31,11 @@ class sMailerServiceProvider extends ServiceProvider
     {
         $this->loadTranslationsFrom(dirname(__DIR__) . '/lang', 'sMailer');
         $this->loadViewsFrom(dirname(__DIR__) . '/views', 'sMailer');
+        $this->loadMigrationsFrom(dirname(__DIR__) . '/database/migrations');
+        $this->mergeConfigFrom(dirname(__DIR__) . '/config/mailings/table.php', 'smailer.mailings.table');
+        $this->mergeConfigFrom(dirname(__DIR__) . '/config/subscribers/table.php', 'smailer.subscribers.table');
+        $this->loadRoutesFrom(dirname(__DIR__) . '/src/Http/routes.php');
+        $this->cacheEmailAssets();
         $this->registerEvoUIComponents();
     }
 
@@ -67,6 +73,32 @@ class sMailerServiceProvider extends ServiceProvider
             'smailer.module-panel',
             ModulePanel::class
         );
+    }
+
+    /**
+     * Make publicly reachable social icon files available without relying on
+     * inline SVG, which many mail clients remove.
+     */
+    protected function cacheEmailAssets(): void
+    {
+        $sourceDirectory = dirname(__DIR__, 3) . '/secondnetwork/blade-tabler-icons/resources/svg';
+        $targetDirectory = public_path('assets/cache/images/smailer');
+
+        if (!is_dir($sourceDirectory)) {
+            return;
+        }
+
+        File::ensureDirectoryExists($targetDirectory);
+        foreach ([
+            'brand-facebook', 'brand-instagram', 'brand-youtube', 'brand-linkedin',
+            'brand-tiktok', 'brand-telegram', 'brand-whatsapp', 'brand-x',
+        ] as $icon) {
+            $source = $sourceDirectory . '/' . $icon . '.svg';
+            $target = $targetDirectory . '/' . $icon . '.svg';
+            if (is_file($source) && !is_file($target)) {
+                File::copy($source, $target);
+            }
+        }
     }
 
     /**
