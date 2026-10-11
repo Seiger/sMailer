@@ -10,6 +10,12 @@ use Illuminate\View\View;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
+/**
+ * Render legacy manager mailing screens and handle their configuration actions.
+ *
+ * Each instance provides a base module URL carrying the current session token
+ * for tabs, subscriber navigation and forms checked by the manager middleware.
+ */
 class sMailerController
 {
     public $url;
@@ -143,13 +149,17 @@ class sMailerController
     }
 
     /**
-     * Module url
+     * Build the manager module URL with the current session token.
+     *
+     * Tabs, form actions, subscriber sorting and pagination reuse this URL
+     * so Evolution's manager token validation also covers internal navigation.
      *
      * @return string
      */
     protected function moduleUrl(): string
     {
-        return 'index.php?a=112&id=' . md5(__('sMailer::global.mailer'));
+        return 'index.php?a=112&id=' . md5(__('sMailer::global.mailer'))
+            . '&_token=' . rawurlencode(csrf_token());
     }
 
     /**

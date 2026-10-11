@@ -7,8 +7,9 @@
     </div>
 </div>
 <form id="search" name="search" method="get" action="index.php">
+    @csrf
     <input type="hidden" name="a" value="112"/>
-    <input type="hidden" name="id" value="{!!str_replace('index.php?a=112&id=', '', $сontroller->url)!!}"/>
+    <input type="hidden" name="id" value="{{explode('&', str_replace('index.php?a=112&id=', '', $сontroller->url))[0]}}"/>
     <input type="hidden" name="get" value="subscribers"/>
     <div class="input-group mb-3">
         <input name="search" value="{{request()->search ?? ''}}" type="search" class="form-control rounded-left seiger-subs-input seiger__search" placeholder="Пошук серед підписників" aria-label="Recipient's username" aria-describedby="basic-addon2">
