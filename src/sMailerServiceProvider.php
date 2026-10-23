@@ -21,8 +21,9 @@ class sMailerServiceProvider extends ServiceProvider
     /**
      * Load the package UI resources after the Evolution application boots.
      *
-     * EvoUI component registration is skipped during transitional Composer
-     * discovery and becomes available on the next normal application boot.
+     * Public subscription requests retain routes, translations and views. Manager
+     * table presets (which resolve domain options), icon preparation and the
+     * interactive component are only needed by manager and console requests.
      *
      * @return void
      * @since 2.0.0
@@ -32,11 +33,14 @@ class sMailerServiceProvider extends ServiceProvider
         $this->loadTranslationsFrom(dirname(__DIR__) . '/lang', 'sMailer');
         $this->loadViewsFrom(dirname(__DIR__) . '/views', 'sMailer');
         $this->loadMigrationsFrom(dirname(__DIR__) . '/database/migrations');
-        $this->mergeConfigFrom(dirname(__DIR__) . '/config/mailings/table.php', 'smailer.mailings.table');
-        $this->mergeConfigFrom(dirname(__DIR__) . '/config/subscribers/table.php', 'smailer.subscribers.table');
         $this->loadRoutesFrom(dirname(__DIR__) . '/src/Http/routes.php');
-        $this->cacheEmailAssets();
-        $this->registerEvoUIComponents();
+
+        if ($this->app->runningInConsole() || (defined('IN_MANAGER_MODE') && IN_MANAGER_MODE)) {
+            $this->mergeConfigFrom(dirname(__DIR__) . '/config/mailings/table.php', 'smailer.mailings.table');
+            $this->mergeConfigFrom(dirname(__DIR__) . '/config/subscribers/table.php', 'smailer.subscribers.table');
+            $this->cacheEmailAssets();
+            $this->registerEvoUIComponents();
+        }
     }
 
     /**
